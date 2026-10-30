@@ -3,12 +3,13 @@ with source_data as (
     from {{ source('raw_data', 'customers') }}
 ), cleaned_data as (
     SELECT
-        c.customer_id,
-        UPPER(TRIM(c.first_name)) AS first_name,
-        UPPER(TRIM(c.last_name)) AS last_name,
-        LOWER(TRIM(c.email)) AS email,
-        COALESCE(c.phone, 'N/A') AS phone,
-        c.created_at,
+        c.customer_id::integer as customer_id,
+        TRIM(UPPER(c.first_name)) AS first_name,
+        TRIM(UPPER(c.last_name)) AS last_name,
+        TRIM(LOWER(c.email)) AS email,
+        COALESCE(TRIM(c.phone), 'N/A') AS phone,
+        --trim(upper(c.country)) as country_code,
+        c.created_at::timestamp_ntz as created_at,
         CASE
             WHEN c.country IS NULL OR c.country = '' THEN 'UNKNOWN'
             WHEN c.country IN ('US', 'USA', 'United States', 'united states') THEN 'US'
@@ -22,7 +23,7 @@ with source_data as (
     WHERE c.created_at IS NOT NULL
     AND c.email IS NOT NULL
     AND c.email LIKE '%@%'
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY LOWER(TRIM(c.email)) ORDER BY c.created_at DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY TRIM(LOWER(c.email)) ORDER BY c.created_at DESC) = 1
 )
 select *
 from cleaned_data
