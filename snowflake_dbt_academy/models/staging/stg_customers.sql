@@ -1,4 +1,3 @@
---CREATE OR REPLACE TEMPORARY TABLE tmp_cleaned_customers AS
 with source_data as (
     select *
     from {{ source('raw_data', 'customers') }}
@@ -27,4 +26,3 @@ with source_data as (
 )
 select *
 from cleaned_data
-
