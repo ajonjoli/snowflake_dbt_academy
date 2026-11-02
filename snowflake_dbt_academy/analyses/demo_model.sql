@@ -1,5 +1,6 @@
+/*
 {#
-/*{{ 
+{{ 
     codegen.generate_source(
         schema_name = 'public',
         database_name = 'raw',
@@ -18,5 +19,6 @@
     )
 }}
 #}
+*/
 -- dbt run-operation generate_base_model --args '{"source_name": "raw_data", "table_name": "customers"}'
 -- dbt run-operation codegen.create_base_models --args '{"source_name": "raw_data", "tables": ["orders", "payments", "products"]}'
