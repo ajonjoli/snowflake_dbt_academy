@@ -1,9 +1,9 @@
 with source_data as (
     select *
     from {{ source('raw_data', 'customers') }}
---),country_map as (
---    select *
---    from {{ ref('country_mapping') }}
+),country_map as (
+    select *
+    from {{ ref('country_mapping') }}
 ), cleaned_data as (
     SELECT
         c.customer_id::integer as customer_id,
@@ -11,21 +11,11 @@ with source_data as (
         TRIM(UPPER(c.last_name)) AS last_name,
         TRIM(LOWER(c.email)) AS email,
         COALESCE(TRIM(c.phone), 'N/A') AS phone,
-        --trim(upper(c.country)) as country_code,
         c.created_at::timestamp_ntz as created_at,
-        CASE
-            WHEN c.country IS NULL OR c.country = '' THEN 'UNKNOWN'
-            WHEN c.country IN ('US', 'USA', 'United States', 'united states') THEN 'US'
-            WHEN c.country IN ('UK', 'GB', 'United Kingdom', 'united kingdom', 'Great Britain') THEN 'UK'
-            WHEN c.country IN ('CA', 'Canada', 'canada') THEN 'CA'
-            WHEN c.country IN ('DE', 'Germany', 'germany') THEN 'DE'
-            WHEN c.country IN ('FR', 'France', 'france') THEN 'FR'
-            ELSE UPPER(c.country)
-        END AS country_standardized
-        --coalesce(cm.country_code, trim(upper(c.country))) as country_standardized
+        coalesce(cm.country_code, trim(upper(c.country))) as country_standardized
     FROM source_data c
-    --LEFT JOIN country_map cm
-    --    ON trim(upper(c.country)) = upper(cm.country_raw)
+    LEFT JOIN country_map cm
+        ON trim(upper(c.country)) = upper(cm.country_raw)
     WHERE c.created_at IS NOT NULL
     AND c.email IS NOT NULL
     AND c.email LIKE '%@%'
