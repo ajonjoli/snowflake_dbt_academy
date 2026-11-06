@@ -41,4 +41,4 @@ models:
                 values: ['completed', 'in_transit', 'open', 'cancelled', 'other']
 
 # dbt docs generate
-# dbt docs setup
+# dbt docs serve
