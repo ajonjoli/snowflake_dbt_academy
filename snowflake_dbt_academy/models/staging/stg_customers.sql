@@ -1,7 +1,7 @@
 with source_data as (
     select *
     from {{ source('raw_data', 'customers') }}
-),country_map as (
+), country_map as (
     select *
     from {{ ref('country_mapping') }}
 ), cleaned_data as (
